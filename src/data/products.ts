@@ -1,6 +1,6 @@
-import { Pizza } from "../interfaces/pizza";
+import {  Product } from "../interfaces/product";
 
-export const pizzas: Pizza[] = [
+export const products: Product[] = [
   {
     id: "margherita",
     name: "Margherita",

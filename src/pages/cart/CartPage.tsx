@@ -2,33 +2,27 @@
 import { CartItemRow } from "@/components/CardItem"
 import { SearchBar } from "@/components/Searchbar"
 import { Button } from "@/components/ui/button"
-import { CartItem } from "@/interfaces/cartItem"
-import { useState } from "react"
+import { useMenu } from "@/hooks/useMenu"
 import { Link } from "react-router"
 
 export default function CartPage() {
-  const [items, setItems] = useState<CartItem[]>([
-    { id: "margherita", name: "Margherita", price: 12.99, quantity: 1 },
-    { id: "mediterranean", name: "Mediterranean", price: 14.99, quantity: 1 },
-  ])
+  const {items,updateQuantity,clearCart,removeItem}=useMenu()
 
   const handleUpdateQuantity = (id: string, delta: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-      )
-    )
+    updateQuantity(id,delta)
+
+
   }
 
   const handleRemove = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id))
+    removeItem(id)
   }
 
   const handleClearCart = () => {
-    setItems([])
+    clearCart()
   }
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = items.reduce((sum, item) => sum + item.item.price * item.quantity, 0)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,7 +42,7 @@ export default function CartPage() {
           <div className="divide-y">
             {items.map((item) => (
               <CartItemRow
-                key={item.id}
+                key={item.item.id}
                 item={item}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemove={handleRemove}

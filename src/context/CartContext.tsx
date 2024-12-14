@@ -6,12 +6,14 @@ interface MenuType {
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, qt: number) => void;
+  clearCart:()=>void;
 }
 const initialState: MenuType = {
   items: [],
   addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
+  clearCart:()=>{}
 };
 
 export const menuContext = createContext(initialState);
@@ -24,21 +26,26 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id != id));
+    setItems((prev) => prev.filter((i) => i.item.id != id));
   };
   const updateQuantity = (id:string, qt:number) => {
+
     setItems((prev) =>
       prev.map((i) => {
-        if (i.id != id) return i;
-        return { ...i, quantity: qt };
+        if (i.item.id != id) return i;
+        return { ...i, quantity:i.quantity+qt };
       })
     );
   };
+  const clearCart=()=>{
+    setItems([])
+  }
   const value: typeof initialState = {
     items,
     addItem,
     removeItem,
-    updateQuantity
+    updateQuantity,
+    clearCart
   };
   return <menuContext.Provider value={value}>{children}</menuContext.Provider>;
 };
