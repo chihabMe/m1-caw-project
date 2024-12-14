@@ -1,19 +1,19 @@
 import { CartItem } from "@/interfaces/cartItem";
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 interface MenuType {
   items: CartItem[];
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, qt: number) => void;
-  clearCart:()=>void;
+  clearCart: () => void;
 }
 const initialState: MenuType = {
   items: [],
   addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
-  clearCart:()=>{}
+  clearCart: () => {},
 };
 
 export const menuContext = createContext(initialState);
@@ -28,24 +28,35 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const removeItem = (id: string) => {
     setItems((prev) => prev.filter((i) => i.item.id != id));
   };
-  const updateQuantity = (id:string, qt:number) => {
-
+  const updateQuantity = (id: string, qt: number) => {
     setItems((prev) =>
       prev.map((i) => {
         if (i.item.id != id) return i;
-        return { ...i, quantity:i.quantity+qt };
+        return { ...i, quantity: i.quantity + qt };
       })
     );
   };
-  const clearCart=()=>{
-    setItems([])
-  }
+  const clearCart = () => {
+    setItems([]);
+  };
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
+    if (cart) {
+      setItems(JSON.parse(cart));
+    }
+  }, []);
+  useEffect(() => {
+    if(items.length!=0){
+    localStorage.setItem("cart", JSON.stringify(items));
+    }
+  }, [items]);
+
   const value: typeof initialState = {
     items,
     addItem,
     removeItem,
     updateQuantity,
-    clearCart
+    clearCart,
   };
   return <menuContext.Provider value={value}>{children}</menuContext.Provider>;
 };
